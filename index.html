@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Песчаное рисование</title>
+
+ <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-size: cover;
+      height: 100vh;
+      position: relative;
+      touch-action: none; /* ← отключает жесты прокрутки */
+    }
+   
+    canvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}   
+
+/* Песок снизу */
+.sand {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-image: url('sand.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% auto; /* растягивает по ширине, сохраняет пропорции */
+  background-position: top center; /* показывает верх изображения */
+  z-index: 1;
+}
+
+/* Волны сверху */
+.waves, .waves2 {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 55vh;
+  background: url('wave.webp');
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  pointer-events: none;
+}
+
+.waves{
+  animation: waveRise 8s ease-in-out infinite;
+  opacity: 0.7;
+  z-index: 4;
+}
+
+.waves2{
+  animation: waveRise 6s ease-in-out infinite;
+  opacity: 0.4;
+  z-index: 3;
+}
+
+@keyframes waveRise {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-40%); }
+  100% { transform: translateY(0); }
+}
+
+
+  </style>
+</head>
+
+<body>
+   <audio id="bgAudio" loop>
+    <source src="background.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="waves"></div>
+  <div class="waves2"></div>
+  <div class="sand"></div>  
+<canvas id="sandCanvas"></canvas>
+
+
+<script>
+const canvas = document.getElementById('sandCanvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+let isDrawing = false;
+let prevX = null;
+let prevY = null;
+
+// Мышь
+canvas.addEventListener('mousedown', (e) => {
+  isDrawing = true;
+  prevX = e.clientX;
+  prevY = e.clientY;
+});
+canvas.addEventListener('mouseup', () => {
+  isDrawing = false;
+  prevX = null;
+  prevY = null;
+});
+canvas.addEventListener('mousemove', (e) => {
+  if (isDrawing && prevX !== null && prevY !== null) {
+    drawLineParticles(prevX, prevY, e.clientX, e.clientY);
+    prevX = e.clientX;
+    prevY = e.clientY;
+  }
+});
+
+// Сенсорный экран
+canvas.addEventListener('touchstart', (e) => {
+  isDrawing = true;
+  const touch = e.touches[0];
+  prevX = touch.clientX;
+  prevY = touch.clientY;
+});
+canvas.addEventListener('touchend', () => {
+  isDrawing = false;
+  prevX = null;
+  prevY = null;
+});
+canvas.addEventListener('touchmove', (e) => {
+  const touch = e.touches[0];
+  if (isDrawing && prevX !== null && prevY !== null) {
+    drawLineParticles(prevX, prevY, touch.clientX, touch.clientY);
+    prevX = touch.clientX;
+    prevY = touch.clientY;
+  }
+});
+
+function drawLineParticles(x1, y1, x2, y2) {
+  const steps = 10;
+  for (let i = 0; i < steps; i++) {
+    const t = i / steps;
+    const x = x1 + (x2 - x1) * t;
+    const y = y1 + (y2 - y1) * t;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const normX = dx / dist;
+    const normY = dy / dist;
+
+    particles.push({
+      x,
+      y,
+      alpha: 1,
+      radius: Math.random() * 10 / 2 + 10 / 2,
+      offsetX: normY, // перпендикуляр к движению
+      offsetY: -normX
+    });
+  }
+}
+
+function drawParticle(p) {
+  const offset = p.radius * 0.3;
+
+  // Тёмная сторона
+  ctx.fillStyle = `rgba(223, 193, 139, ${p.alpha})`;
+  ctx.beginPath();
+  ctx.arc(p.x + p.offsetX * offset, p.y + p.offsetY * offset, p.radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Светлая сторона
+  ctx.fillStyle = `rgba(234, 205, 160, ${p.alpha * 0.5})`;
+  ctx.beginPath();
+  ctx.arc(p.x - p.offsetX * offset, p.y - p.offsetY * offset, p.radius, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach((p, index) => {
+    drawParticle(p);
+    p.alpha -= 0.01;
+    if (p.alpha <= 0) particles.splice(index, 1);
+  });
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+document.body.addEventListener('click', () => {
+  document.getElementById('bgAudio').play();
+}, { once: true });
+
+</script>
+
+</body>
+</html>
