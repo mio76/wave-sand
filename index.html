@@ -479,7 +479,7 @@ animate();
 
 /*Установка как программа*/
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/magic-note/sw.js')
+  navigator.serviceWorker.register('/wave-sand/sw.js')
     .then(() => console.log('SW зарегистрирован'))
     .catch(error => console.error('Ошибка регистрации SW:', error));
 }
