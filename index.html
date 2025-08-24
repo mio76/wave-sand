@@ -3,37 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Песчаное рисование</title>
+  <title>Sand Relax</title>
+
+  <link rel="manifest" href="manifest.json">
 
  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-size: cover;
-      height: 100vh;
-      position: relative;
-      touch-action: none; /* ← отключает жесты прокрутки */
+
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+  }
+  
+  body {
+    overflow: hidden;
+    background-size: cover;
+    height: 100vh;
+    touch-action: none; /* ← отключает жесты прокрутки */
     }
    
     canvas {
   display: block;
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
+  height: 100%;
+  width: 100%;
+  inset: 0;
 }   
 
 /* Песок снизу */
 .sand {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
+  position: absolute;
   background-image: url('sand.jpg');
   background-repeat: no-repeat;
   background-size: 100% auto; /* растягивает по ширине, сохраняет пропорции */
   background-position: top center; /* показывает верх изображения */
-  z-index: 1;
+  inset: 0; /*позиция по всем направлениям*/
 }
 
 /* Волны сверху */
@@ -41,7 +46,7 @@
   position: absolute;
   top: 0;
   width: 100%;
-  height: 55vh;
+  height: 100%;
   background: url('wave.webp');
   background-repeat: no-repeat;
   background-size: 100% auto;
@@ -51,34 +56,185 @@
 .waves{
   animation: waveRise 8s ease-in-out infinite;
   opacity: 0.7;
-  z-index: 4;
 }
 
 .waves2{
   animation: waveRise 6s ease-in-out infinite;
   opacity: 0.4;
-  z-index: 3;
+}
+
+@keyframes fadeInZoom {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@keyframes fadeOutZoom {
+  0% {opacity: 1;}
+  100% {opacity: 0;}
 }
 
 @keyframes waveRise {
   0%   { transform: translateY(0); }
-  50%  { transform: translateY(-40%); }
+  50%  { transform: translateY(-30%); }
   100% { transform: translateY(0); }
 }
 
+/* ПАЛЬМА*/
+@keyframes swayAndPulse {
+  0% {transform: rotate(8deg) scale(1);}  
+  330% {transform: rotate(14deg) scale(0.9);}   
+  66% {transform: rotate(16deg) scale(1.1);}   
+  100% {transform: rotate(8deg) scale(1);}
+}
+
+.palm {
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  opacity: 0.2;
+  pointer-events: none;
+  animation: swayAndPulse 6s ease-in-out infinite;
+  transform-origin: bottom left; /* точка вращения */  
+
+  max-width: 400px;
+  width: 80%;
+  height: auto;
+} 
+
+.centered-text {
+  margin-top: 27%;
+  color: #DFC18B;
+  text-align: center;
+  font-weight: bold;
+  pointer-events: none;
+
+  font-size: clamp(3rem, 16vw, 14vh); /* адаптивный размер */
+  line-height: 1.1;
+  max-width: 100%; /* важно */
+  animation: fadeInZoom 2s ease-out forwards;
+}
+
+
+.centered-text.sand-out {
+  animation: fadeOutZoom 2s ease forwards;
+}
+
+/* ПЕРЕДЕЛКА*/
+.scene {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sand   { z-index: 1; }
+.footprint {z-index: 2; }
+.dune {z-index: 2;}
+#crab {z-index: 4; }
+.trail {z-index: 2;}
+.star {z-index: 3;}
+.waves2 { z-index: 5; }
+.waves  { z-index: 6; }
+.centered-text { z-index: 7; }
+.palm   { z-index: 8; }
+.canvas { z-index: 10; }
+
+/* КРАБИК*/
+#crab {
+      width: 100px;
+      height: 61px;
+      background-image: url('crab.svg');
+      background-size: cover;
+      position: absolute;
+      top: 200px;
+      left: 200px;
+      filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.5));
+      transition: transform 0.2s ease;
+    }
+
+    .footprint {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    @keyframes crabBreath {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.9);
+  }
+}
+.moving {
+  animation: crabBreath 0.4s infinite ease-in-out;
+}
+
+/*ЗВЕЗДА*/
+.star {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-image: url('star.webp');
+  background-size: cover;
+  background-repeat: no-repeat;
+  transform-origin: center center;
+  filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.5));
+  animation: spin 30s ease-out;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dune {
+  position: absolute; 
+  width: 60%;
+  height: 70%;
+  background: url('dune.webp') no-repeat bottom center;
+  background-size: 100% auto;
+  pointer-events: none;
+  right: 0;
+  bottom: 0;
+  opacity: 0.4;
+}
 
   </style>
 </head>
 
 <body>
+
+ <!-- 🔒 PALM -->
+  <svg style="display: none;">
+    <symbol id="palm" viewBox="0 0 143.2 221.63" xmlns="http://www.w3.org/2000/svg">
+      <path fill="black" d="M107.72 9.15c-7.38 1.76-20.35 7.33-20.55 16.27-1.06-.28-1.18-4.35-1.18-5.38-4 0-14.47 9.99-14.47 14.13-1.77-2.04-5.76-17.39-8.42-16.83 0 1.6-.68 4.46-1.51 5.73 0-7.38-11.94-27.91-14.11-22.02-.65 1.77.9 3.45.31 4.68-1.6-.17-6.76-6.09-9.35-5.14-4.27 1.57-18.98 6.5-19.01 6.51 0 .37 13.02 16.95 14.09 19.3 1.03 2.24 7.68 3.06 10.57 3.06-.53.73-5.89 2.05-7.24 2.69 0 1.6 6.78 11.63 7.45 12.75 2.47 2.58 7.5 2.78 8.2 3.74-.91.61-2.59.99-3.7 1.52.03 1.46 4.85 7.15 5.55 9.09C54.63 61.53 4.23 24.57 0 80.62c.89-1.4 19.35-9.53 20.13-8.48.24-.47 3.86-7.18 4.78-7.51 0 1.21-2.59 8.65-1.49 9.06.03.01 9.93 1.03 10.41 1.04 3.75.02 5.22-5.22 7.73-5.89-.04 1.86-3.99 5.92-2.31 7.02 2.09 1.38 3.62 2.69 5.44 4.49 3.15 2.65-32.16 12.48-21.13 53.78 1.92 0 11.9-12.27 14.47-12.96v-10.94c1.09.4 2.67 4.92 4.21 6.4 1.05-.28 8.82-10.58 12.11-12.79 0 7.07-2.21 18.69-3.2 26.08-.02.19.39 2.1.4 2.32-.57 1.4-3.57 29.7-3.64 29.94-.24.81-.46.03-.47 1.55-.01 3.43-.24 17.3-.84 20.36-.79 3.99-.75 16.25-.9 16.52-.22.41-1.02-.24-1 1.61.01.73-2.29 18.68-2.29 19.41h13.63c0-2.57-.51-5.47.4-7.51.02-.05.48-5.38.61-6.45.32-2.65.27-6.8.54-9.8.15-1.8-.05-.85.28-2.51.23-1.16.48-9.36.54-11.58.03-1.19-.25-5.05.03-6.02.24-.81.46-.03.47-1.55.04-12.33.38-24.01 2.17-36.2.27-1.87-.14-4.19-.01-6.06.74-10.59 3.38-21.46 3.38-32.97 8.54 0 19.45 9.59 19.69 9.59v-7.74c2.46 3.52 1.31 8.12 5.17 11.99 1.52 1.52 12.69 13.99 13.84 14.77 17.98-13.24 2.47-35.81-1.34-34.67h3.53c0-3.97-15.44-16-15.98-17.5l19.53.01c2.76.03-1.52-5.61-1.7-7.75 1.45.52 6.9 7.77 8.46 8.2.61.17 26.93.53 27.55.38-.34-20.11-38.61-30.95-50.19-19.94-.15-.5 12.33-12.76 12.33-15.23-.97 0-6.76-1.82-7.23-2.52 3.93 0 7.6-.51 10.93-.51 0-2.97 12.5-19.08 13.48-25.58.81-5.39-17.6.1-19.94.57.05-2.05 10.81-8.38 5.14-5.9"/></svg>
+    </symbol>
+  </svg>
+
    <audio id="bgAudio" loop>
     <source src="background.mp3" type="audio/mpeg">
   </audio>
 
-  <div class="waves"></div>
-  <div class="waves2"></div>
-  <div class="sand"></div>  
-<canvas id="sandCanvas"></canvas>
+  <div class="scene">
+    <div class="waves"></div>
+    <div class="waves2"></div>
+    <div class="sand">
+      <div class="centered-text">НАМАЛЮЙ СВОЮ ПРОБЛЕМУ</div>
+      <canvas id="sandCanvas"></canvas>
+  </div>
+  <div class="dune"></div>
+  <svg class="palm" width="424" height="660"><use href="#palm" /></svg>
+  <div id="crab"></div>
+  <div class="star"></div>
+</div>
 
 
 <script>
@@ -150,7 +306,7 @@ function drawLineParticles(x1, y1, x2, y2) {
       x,
       y,
       alpha: 1,
-      radius: Math.random() * 10 / 2 + 10 / 2,
+      radius: Math.random() * 8 / 2 + 8 / 2,
       offsetX: normY, // перпендикуляр к движению
       offsetY: -normX
     });
@@ -158,7 +314,7 @@ function drawLineParticles(x1, y1, x2, y2) {
 }
 
 function drawParticle(p) {
-  const offset = p.radius * 0.3;
+  const offset = p.radius * 0.5;
 
   // Тёмная сторона
   ctx.fillStyle = `rgba(223, 193, 139, ${p.alpha})`;
@@ -167,7 +323,7 @@ function drawParticle(p) {
   ctx.fill();
 
   // Светлая сторона
-  ctx.fillStyle = `rgba(234, 205, 160, ${p.alpha * 0.5})`;
+  ctx.fillStyle = `rgba(235, 216, 172, ${p.alpha * 0.5})`;
   ctx.beginPath();
   ctx.arc(p.x - p.offsetX * offset, p.y - p.offsetY * offset, p.radius, 0, Math.PI * 2);
   ctx.fill();
@@ -179,8 +335,14 @@ function draw() {
     drawParticle(p);
     p.alpha -= 0.01;
     if (p.alpha <= 0) particles.splice(index, 1);
+    /* Начинаем рисовать и Стираем текст*/
+    const text = document.querySelector('.centered-text');
+    if (text) {
+      text.classList.add('sand-out');
+    }
+
   });
-  requestAnimationFrame(draw);
+  requestAnimationFrame(draw); 
 }
 
 draw();
@@ -188,6 +350,139 @@ draw();
 document.body.addEventListener('click', () => {
   document.getElementById('bgAudio').play();
 }, { once: true });
+
+/*КРАБИК*/
+ const crab = document.getElementById('crab');
+    let posX = 200;
+    let posY = 200;
+    let angle = Math.random() * Math.PI * 2; // угол направления
+    let isSleeping = false;
+    let footprintCounter = 0;
+
+    function leaveFootprints(x, y) {
+      const offsetX = 16;
+      const offsetY = 16;
+
+      for (let i = 0; i < 2; i++) {
+        const leftFoot = document.createElement('div');
+        leftFoot.className = 'footprint';
+        leftFoot.style.left = `${x - offsetX}px`;
+        leftFoot.style.top = `${y + i * offsetY}px`;
+        document.body.appendChild(leftFoot);
+
+        const rightFoot = document.createElement('div');
+        rightFoot.className = 'footprint';
+        rightFoot.style.left = `${x + offsetX}px`;
+        rightFoot.style.top = `${y + i * offsetY}px`;
+        document.body.appendChild(rightFoot);
+
+        setTimeout(() => {
+          leftFoot.remove();
+          rightFoot.remove();
+        }, 6000);
+      }
+    }
+
+    function updateCrabPosition() {
+
+      if (isSleeping) {
+  crab.classList.remove('moving'); // убираем дыхание
+  return;
+} else {
+  crab.classList.add('moving'); // включаем дыхание
+}
+
+      if (isSleeping) return;
+
+      const speed = 2;
+      posX += Math.cos(angle) * speed;
+      posY += Math.sin(angle) * speed;
+
+      const maxX = window.innerWidth - crab.offsetWidth;
+      const maxY = window.innerHeight - crab.offsetHeight;
+
+      if (posX < 0 || posX > maxX) angle = Math.PI - angle;
+      if (posY < 0 || posY > maxY) angle = -angle;
+
+      crab.style.left = `${posX}px`;
+      crab.style.top = `${posY}px`;
+
+      footprintCounter++;
+      if (footprintCounter % 5 === 0) {
+        const centerX = posX + crab.offsetWidth / 2;
+        const centerY = posY + crab.offsetHeight / 2;
+        leaveFootprints(centerX, centerY);
+      }   
+    }
+
+    // Плавное изменение направления
+    setInterval(() => {
+      const turn = (Math.random() - 0.5) * 0.3; // небольшое отклонение
+      angle += turn;
+      isSleeping = Math.random() < 0.3;
+    }, 1500);
+
+    setInterval(updateCrabPosition, 30);
+
+    function checkProximity(x, y) {
+      const rect = crab.getBoundingClientRect();
+      const dx = x - (rect.left + rect.width / 2);
+      const dy = y - (rect.top + rect.height / 2);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < 100) {
+        angle = Math.atan2(-dy, -dx); // убегает от курсора
+        isSleeping = false;
+        }
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      checkProximity(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      checkProximity(touch.clientX, touch.clientY);
+    });
+
+    /* "ЗІРКА" */
+   
+const star = document.querySelector('.star');
+let x = 200;
+let y = 300;
+let vx = 0.2;
+let vy = 0.2;
+
+function animate() {
+  x += vx;
+  y += vy;
+
+  const starWidth = star.offsetWidth;
+  const starHeight = star.offsetHeight;
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+
+  if (x <= 0 || x + starWidth >= windowWidth) {
+    vx *= -1;
+  }
+  if (y <= 0 || y + starHeight >= windowHeight) {
+    vy *= -1;
+  }
+
+  star.style.left = `${x}px`;
+  star.style.top = `${y}px`;
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+/*Установка как программа*/
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/magic-note/sw.js')
+    .then(() => console.log('SW зарегистрирован'))
+    .catch(error => console.error('Ошибка регистрации SW:', error));
+}
 
 </script>
 
