@@ -75,7 +75,7 @@
 
 @keyframes waveRise {
   0%   { transform: translateY(0); }
-  50%  { transform: translateY(-30%); }
+  50%  { transform: translateY(-10%); }
   100% { transform: translateY(0); }
 }
 
@@ -91,7 +91,7 @@
   position: absolute;
   bottom: -100px;
   left: -100px;
-  opacity: 0.2;
+  opacity: 0.1;
   pointer-events: none;
   animation: swayAndPulse 6s ease-in-out infinite;
   transform-origin: bottom left; /* точка вращения */  
@@ -120,11 +120,12 @@
   font-weight: bold;
   pointer-events: none;
 
-  font-size: clamp(3rem, 16vw, 14vh);
+  font-size: clamp(3rem, 14vw, 14vh);
   line-height: 1.2;
   max-width: 100%;
   animation: fadeInZoom 2s ease-out forwards;
 }
+
 
 .push-text.sand-out {
   animation: fadeOutZoom 2s ease forwards;
@@ -220,7 +221,7 @@
   pointer-events: none;
   right: 0;
   bottom: 0;
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
   </style>
@@ -244,10 +245,10 @@
     <div class="waves2"></div>
     <div class="sand">        
       <div class="text-wrapper">
-        
   <div class="push-text">ТИЦНИ НА МЕНЕ</div>
   <div id="problem" style="display: none;" class="centered-text">НАМАЛЮЙ СВОЮ ПРОБЛЕМУ</div>
 </div>
+
       <canvas id="sandCanvas"></canvas>
   </div>
   <div class="dune"></div>
@@ -516,5 +517,4 @@ if ('serviceWorker' in navigator) {
 </script>
 
 </body>
-
 </html>
